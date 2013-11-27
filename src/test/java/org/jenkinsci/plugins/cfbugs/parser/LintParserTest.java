@@ -33,6 +33,7 @@ public class LintParserTest extends TestCase {
         assertEquals(LintParser.FILENAME_UNKNOWN, a.getFileName());
         assertEquals("UnknownId", a.getType());
         assertUnknownIssue(a);
+        
 
         a = annotations.get(1);
         assertEquals("Call requires API level 8 (current min is 7): "
@@ -42,6 +43,7 @@ public class LintParserTest extends TestCase {
         assertEquals("bin/classes/InputObject.class", a.getFileName());
         assertEquals("NewApi", a.getType());
         assertUnknownIssue(a);
+        assertEquals("x=123",a.getErrorLines().get(0));
 
         a = annotations.get(2);
         assertEquals("The &lt;activity&gt; MonitoredActivity is not registered in the manifest",

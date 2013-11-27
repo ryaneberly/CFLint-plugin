@@ -10,6 +10,8 @@ public class Location implements Serializable {
     private String filename;
     private int lineNumber;
     private int column;
+    private String message;
+    private String expression;
 
     /** @return The file name. */
     public String getFile() {
@@ -40,5 +42,21 @@ public class Location implements Serializable {
     public void setColumn(final int column) {
         this.column = column;
     }
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getExpression() {
+		return expression;
+	}
+
+	public void setExpression(String expression) {
+		this.expression = expression;
+	}
 
 }

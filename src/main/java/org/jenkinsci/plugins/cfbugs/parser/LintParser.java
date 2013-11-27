@@ -27,10 +27,11 @@ public class LintParser extends AbstractAnnotationParser {
 	public static final String FILENAME_UNKNOWN = "(none)";
 
 	private static final String SEVERITY_FATAL = "Fatal";
-
+	
 	private static final String SEVERITY_ERROR = "Error";
-
+	
 	private static final String SEVERITY_INFORMATIONAL = "Information";
+	
 
 	private static final long serialVersionUID = 7110868408124058985L;
 
@@ -62,6 +63,7 @@ public class LintParser extends AbstractAnnotationParser {
 
 			final String locationXPath = issueXPath + "/location";
 			digester.addObjectCreate(locationXPath, Location.class);
+			digester.addSetNestedProperties(locationXPath, "Expression", "expression");
 			digester.addSetProperties(locationXPath);
 			digester.addSetNext(locationXPath, "addLocation", Location.class.getName());
 
@@ -107,6 +109,7 @@ public class LintParser extends AbstractAnnotationParser {
 				// ParserResult does later)
 				filename = locations.get(0).getFile();
 				lineNumber = locations.get(0).getLine();
+				issue.setErrorLine1(locations.get(0).getExpression());
 			}
 
 			final Priority priority = getPriority(issue.getSeverity());
@@ -118,6 +121,10 @@ public class LintParser extends AbstractAnnotationParser {
 			if (category == null) {
 				category = Messages.CFBugs_Parser_UnknownCategory();
 				explanation = Messages.CFBugs_Parser_UnknownExplanation(issue.getId());
+			}
+
+			if (explanation == null) {
+				explanation = StringEscapeUtils.escapeHtml(locations.get(0).getMessage());
 			}
 
 			// Create annotation
@@ -156,10 +163,10 @@ public class LintParser extends AbstractAnnotationParser {
 			}
 
 			// Add additional locations for this the issue, if any
-			if(locations.size()>1){
-				Iterator<Location> locIterator = locations.iterator();
-				locIterator.next();//Not the first one
-				while(locIterator.hasNext()){
+			if (locations.size() > 1) {
+				final Iterator<Location> locIterator = locations.iterator();
+				locIterator.next();// Not the first one
+				while (locIterator.hasNext()) {
 					annotation.addLocation(locIterator.next());
 				}
 			}
@@ -190,10 +197,10 @@ public class LintParser extends AbstractAnnotationParser {
 	 * @return Corresponding priority value.
 	 */
 	private Priority getPriority(final String severity) {
-		if (SEVERITY_FATAL.equals(severity) || SEVERITY_ERROR.equals(severity)) {
+		if (SEVERITY_FATAL.equalsIgnoreCase(severity) || SEVERITY_ERROR.equalsIgnoreCase(severity)) {
 			return Priority.HIGH;
 		}
-		if (SEVERITY_INFORMATIONAL.equals(severity)) {
+		if (SEVERITY_INFORMATIONAL.equalsIgnoreCase(severity)) {
 			return Priority.LOW;
 		}
 		return Priority.NORMAL;
